@@ -2,8 +2,10 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from database import insertar_tarea, obtener_todas_las_tareas, eliminar_tarea_por_id,marcar_tarea_completada
-
+from database import agregar_subtarea, insertar_tarea, obtener_subtareas, obtener_todas_las_tareas, eliminar_tarea_por_id,marcar_tarea_completada
+from datetime import datetime
+from plyer import notification
+ 
 class GestorTareasUI:
     def __init__(self, root):
         self.root = root
@@ -46,6 +48,11 @@ class GestorTareasUI:
         self.lista_tareas = tk.Listbox(frame_lista, height=10, font=("Segoe UI", 10))
         self.lista_tareas.pack(side="left", fill="both", expand=True)
 
+        self.subtareas_box = tk.Listbox(root,height=5)
+        self.subtareas_box.pack(pady=5)
+
+        
+
         scrollbar = ttk.Scrollbar(frame_lista, orient="vertical", command=self.lista_tareas.yview)
         scrollbar.pack(side="right", fill="y")
         self.lista_tareas.config(yscrollcommand=scrollbar.set)
@@ -55,9 +62,13 @@ class GestorTareasUI:
         self.btn_eliminar.pack(pady=10)
 
         # --- Cargar tareas guardadas ---
-        self.cargar_tareas()
+        self.cargar_tareas() 
 
         self.lista_tareas.bind("<Double-Button-1>",self.marcar_como_completada)
+
+       
+
+        
 
     def agregar_tarea(self):
         titulo = self.entry_titulo.get()
@@ -122,4 +133,11 @@ class GestorTareasUI:
         except Exception as e:
             messagebox.showerror("Error",f"No se puede marcar como completada{str(e)}")                 
 
-            
+    def mostrar_subtareas(self,tarea_id):
+        self.subtareas_box.delete(0, tk.END) 
+        subtareas = obtener_subtareas(tarea_id)
+        for sub in subtareas:
+            estado = "✔️" if sub[3] else "⏳"
+            self.subtareas_box.insert(tk.END, f"{estado} {sub[2]}")
+
+    

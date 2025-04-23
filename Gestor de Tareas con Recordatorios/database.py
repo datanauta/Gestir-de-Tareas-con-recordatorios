@@ -14,8 +14,20 @@ def conectar():
         completada INTEGER DEFAULT 0
         )
     """)
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS subtareas(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tarea_id INTEGER,
+        titulo TEXT,
+        completada BOOLEAN DEFAULT 0,
+        FOREIGN KEY (tarea_id) REFERENCES tareas(id)
+        )
+        """)
     conn.commit()
     conn.close()
+
 
 
 def insertar_tarea(titulo,descripcion,fecha_limite, prioridad):
@@ -51,3 +63,20 @@ def marcar_tarea_completada(tarea_id):
     cursor.execute("UDATE tareas SET completada =  WHERE id = ?",(tarea_id,))
     conn.commit()
     conn.close()
+
+conexion = sqlite3.connect("tareas.db")
+cursor = conexion.cursor()
+
+def agregar_subtarea(tarea_id,titulo):
+    cursor.execute("INSERT INTO sutareas (tarea_id,titulo) VALUES(?,?)",(tarea_id,titulo))
+    conexion.commit()
+
+def obtener_subtareas(tarea_id):
+    cursor.execute("SELECT * FROM subtareas WHERE tarea_id = ?",(tarea_id,))
+    return cursor.fetchall()
+
+def completar_subtarea(subtarea_id, estado):
+    cursor.execute("UPDATE subtareas SET completada = ? WHERE id = ?",(estado,subtarea_id))
+    conexion.commit()
+
+   
