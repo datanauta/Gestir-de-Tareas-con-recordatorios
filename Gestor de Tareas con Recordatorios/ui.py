@@ -2,7 +2,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from database import insertar_tarea, obtener_todas_las_tareas, eliminar_tarea_por_id
+from database import insertar_tarea, obtener_todas_las_tareas, eliminar_tarea_por_id,marcar_tarea_completada
 
 class GestorTareasUI:
     def __init__(self, root):
@@ -12,6 +12,8 @@ class GestorTareasUI:
         self.root.configure(bg="#f5f5f5")
 
         self.ids_tareas = []
+
+       
 
         # --- Formulario de entrada ---
         frame_form = ttk.LabelFrame(root, text="Nueva Tarea", padding=10)
@@ -55,6 +57,8 @@ class GestorTareasUI:
         # --- Cargar tareas guardadas ---
         self.cargar_tareas()
 
+        self.lista_tareas.bind("<Double-Button-1>",self.marcar_como_completada)
+
     def agregar_tarea(self):
         titulo = self.entry_titulo.get()
         descripcion = self.entry_descripcion.get()
@@ -73,7 +77,7 @@ class GestorTareasUI:
         self.entry_titulo.delete(0, tk.END)
         self.entry_descripcion.delete(0, tk.END)
         self.entry_fecha.delete(0, tk.END)
-        self.combo_prioridad.current(1)
+        self.combo_prioridad.current(1) 
 
     def cargar_tareas(self):
         tareas = obtener_todas_las_tareas()
@@ -100,3 +104,22 @@ class GestorTareasUI:
         tarea_id = self.ids_tareas[indice]
         eliminar_tarea_por_id(tarea_id) #error
         self.cargar_tareas()    
+
+
+    def marcar_como_completada(self,event):
+        try:
+            seleccion = self.lista_tareas.curselection()
+            if not seleccion:
+                return
+        
+            indice = seleccion[0]
+            if indice >= len(self.ids_tareas):
+                return
+
+            tarea_id = self.ids_tareas[indice]
+            marcar_tarea_completada(tarea_id)
+            self.cargar_tareas()
+        except Exception as e:
+            messagebox.showerror("Error",f"No se puede marcar como completada{str(e)}")                 
+
+            
