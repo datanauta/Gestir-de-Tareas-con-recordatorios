@@ -2,10 +2,11 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from database import agregar_subtarea, insertar_tarea, obtener_subtareas, obtener_todas_las_tareas, eliminar_tarea_por_id,marcar_tarea_completada
+from database import agregar_subtarea, insertar_tarea, obtener_estadisticas, obtener_subtareas, obtener_todas_las_tareas, eliminar_tarea_por_id,marcar_tarea_completada, obtener_estadisticas
 from datetime import datetime
 from plyer import notification
- 
+
+
 class GestorTareasUI:
     def __init__(self, root):
         self.root = root
@@ -40,6 +41,9 @@ class GestorTareasUI:
 
         self.btn_agregar = ttk.Button(frame_form, text="Agregar Tarea", command=self.agregar_tarea)
         self.btn_agregar.grid(row=4, column=0, columnspan=2, pady=10)
+
+        
+
 
         # --- Lista de tareas ---
         frame_lista = ttk.LabelFrame(root, text="Tareas", padding=10)
@@ -139,5 +143,26 @@ class GestorTareasUI:
         for sub in subtareas:
             estado = "✔️" if sub[3] else "⏳"
             self.subtareas_box.insert(tk.END, f"{estado} {sub[2]}")
+
+    def mostrar_estadisticas():
+        stats = obtener_estadisticas()
+
+        mensaje = (
+            f"📋Estadísticas : \n\n"
+            f"Total de tareas: {stats['toal']}\n"
+            f"Tareas completadas:{stats['completadas']}\n"
+            f"Tareas pendientes: {stats['pendientes']}\n"
+            f"Subtareas completadas: {stats['subtareas_completadas']}\n\n"
+            f"Tareas por prioridad:\n"
+        )
+
+        for prioridad,cantidad in stats['por_prioridad']:
+            mensaje += f"-{prioridad}: {cantidad}\n"
+        messagebox.showinfo("Estadisticas",mensaje)    
+    
+
+
+
+
 
     

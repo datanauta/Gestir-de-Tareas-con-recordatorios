@@ -79,4 +79,31 @@ def completar_subtarea(subtarea_id, estado):
     cursor.execute("UPDATE subtareas SET completada = ? WHERE id = ?",(estado,subtarea_id))
     conexion.commit()
 
-   
+def obtener_estadisticas():
+    conn = sqlite3.connect("tareas.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT (*) FROM tareas")
+    total = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM tareas WHERE completada = 1")
+    completadas = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM tareas WHERE completada = 0")
+    pendientes = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM subtareas WHERE completada = 1")
+    subtareas_completadas = cursor.fetchone()[0]
+
+    cursor.execute("SELECT prioridad, COUNT(*) FROM tareas GROUP BY prioridad")
+    por_prioridad = cursor.fetchall()
+
+    conn.close()
+
+    return {
+        "total":total,
+        "completadas":completadas,
+        "pendientes":pendientes,
+        "subtareas_completadas":subtareas_completadas,
+        "por_prioridad":por_prioridad
+    }   
